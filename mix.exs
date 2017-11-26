@@ -7,7 +7,11 @@ defmodule SmokeTest.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      name: "SmokeTest",
+      description: description(),
+      package: package()
+      deps: deps(),
+      source_url: "https://github.com/matthewoden/SmokeTest"
     ]
   end
 
@@ -24,6 +28,21 @@ defmodule SmokeTest.Mixfile do
       {:plug, "~> 1.1"},
       {:poison, "~> 3.0", optional: true},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false}
+    ]
+  end
+
+  defp desciption do
+    """ 
+    A configurable Plug middleware to quickly find errors that might prevent a deployment. It can also be used as an application health-check.
+    """
+  end
+
+
+  defp package do
+    [
+      maintainers: ["Matthew Potter"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/matthewoden/SmokeTest"}
     ]
   end
 end
