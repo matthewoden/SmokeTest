@@ -14,7 +14,7 @@ configuration.
 For pure Plug applications, simply use `Plug.Router.forward/2` on the path you'd
 like to use for smoke-testing.
 
-```
+``` elixir
 defmodule ExamplePlugWeb.Router do
   use Plug.Router
 
@@ -29,7 +29,7 @@ You can pass Smoketest into
 [`Phoenix.Router.forward/4`](https://hexdocs.pm/phoenix/Phoenix.Router.html#forward/4),
 choosing whatever route you prefer for smoke testing.
 
-```
+``` elixir
 defmodule ExamplePhoenixWeb.Router do
   use ExampleWeb, :router
 
@@ -52,7 +52,7 @@ map with the following properties:
 Each test should return a two-item tuple of `{:ok, term}` or `{:error, reason}`.
 Items that don't fulfill this spec are marked as a failure.
 
-```
+``` elixir
 config :example, SmokeTest,
   tests: [
     # Test "db" calls a Module.function(args), with a timeout of 5000 ms
@@ -73,7 +73,7 @@ config :example, SmokeTest,
 The status to return on success and failure is also configurable. Success
 defaults to 200, and failure defaults to 503
 
-```
+``` elixir
 config :example, Smoketest,
   success_status: 201,
   failure_status: 500
@@ -88,7 +88,7 @@ default, and need not be configured if present in your deps. See
 To explicitly configure your own adapter, add the following to your `SmokeTest`
 configuration:
 
-```
+``` elixir
 config :example, SmokeTest,
   json_encoder: SmokeTest.Adapters.JSONEncoder.Poison # Again, used by default.
 ```
@@ -97,7 +97,7 @@ config :example, SmokeTest,
 
 Here's a quick example output of a failed smoketest.
 
-```
+``` json
 {
   "app":"example",
   "status":"failures",
@@ -121,7 +121,7 @@ Here's a quick example output of a failed smoketest.
 
 And a successful one
 
-```
+``` json
 {
   "app":"example",
   "status":"ok",
@@ -141,7 +141,7 @@ more details.
 The package can be installed by adding `smoke_test` to your list of dependencies
 in `mix.exs`:
 
-```elixir
+``` elixir
 def deps do
   [
     {:smoke_test, "~> 0.1.0"}
