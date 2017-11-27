@@ -9,7 +9,7 @@ defmodule SmokeTest.Mixfile do
       start_permanent: Mix.env == :prod,
       name: "SmokeTest",
       description: description(),
-      package: package()
+      package: package(),
       deps: deps(),
       source_url: "https://github.com/matthewoden/SmokeTest"
     ]
@@ -31,7 +31,7 @@ defmodule SmokeTest.Mixfile do
     ]
   end
 
-  defp desciption do
+  defp description do
     """ 
     A configurable Plug middleware to quickly find errors that might prevent a deployment. It can also be used as an application health-check.
     """
