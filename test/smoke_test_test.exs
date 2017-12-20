@@ -131,4 +131,10 @@ defmodule SmokeTestTest do
     assert decoded["status"] == "failures"
   end
 
+  test "returns a content-type of application/json" do
+    conn = add_config [ tests: [%{id: "success!", test: {SmokeTestTest, :pass, []} } ]]    
+    
+    assert conn.status == 200   
+    assert Plug.Conn.get_resp_header(conn, "content-type") == ["application/json; charset=utf-8"]
+  end
 end

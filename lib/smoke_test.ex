@@ -180,8 +180,10 @@ defmodule SmokeTest do
       app: project[:app], 
       version: project[:version]
     })
-
-    send_resp(conn, status_code, encoder.encode!(body))
+    
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(status_code, encoder.encode!(body))
   end
 
   defp format_status(%{failures: _}, _, status), do: { status, "failures" }
