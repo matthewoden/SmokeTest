@@ -59,6 +59,7 @@ config :example, SmokeTest,
     %{ id: "db", test: {Module, :function, [args]}, timeout: 5000} ,
 
     # Test "cluster" calls an anonymous function, with a timeout of 1500ms
+    # NOTE: This will blow up your distillery release.
     %{ id: "cluster", test: fn -> :net_adm.names() end, timeout: 1500 },
 
     # Test "other" calls another  module, and uses the default timeout of 1000
@@ -104,14 +105,14 @@ Here's a quick example output of a failed smoketest.
   "version":"0.0.1",
   "timeouts":[
     {
-      "id": "cluster"
+      "id": "cluster",
       "result": "No response",
       "timeout": 15000
     }
   ],
   "failures":[
       {
-        "id":"DB"
+        "id":"DB",
         "timeout":5000,
         "result":"Argument Error"
       }
