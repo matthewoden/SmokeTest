@@ -37,11 +37,12 @@ if Code.ensure_loaded?(Poison) do
         """
         @behaviour SmokeTest.Adapters.JSONEncoder
 
+        def encode!(data), do: Poison.encode!(data, [])
         @impl true
         @doc """
         encodes a value into JSON.
         """
-        def encode!(data, options \\ []) do
+        def encode!(data, options) do
             Poison.encode!(data, options)
         end
     end

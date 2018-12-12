@@ -4,7 +4,7 @@ defmodule SmokeTest.Mixfile do
   def project do
     [
       app: :smoke_test,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
       name: "SmokeTest",
@@ -27,7 +27,7 @@ defmodule SmokeTest.Mixfile do
     [ 
       {:plug, "~> 1.1"},
       {:poison, "~> 3.0", optional: true},
-      {:ex_doc, "~> 0.14", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end
 
