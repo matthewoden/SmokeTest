@@ -22,7 +22,7 @@ defmodule SmokeTest do
   defmodule ExamplePlugWeb.Router do
     use Plug.Router
 
-    forward "/ping", to: SmokeTest, init_opts: [otp_app: :example])
+    forward "/ping", to: SmokeTest, init_opts: [otp_app: :example]
   end
   ```
 
@@ -41,40 +41,77 @@ defmodule SmokeTest do
   end
   ```
 
+  ### Configuration
+  Configuration can be provided as part of your application config, or as a
+  keyword list in the plug itself. Options from your application config will
+  be overriden by explicit plug configuration.
+
+  Configuration values are expected to resolved at compile time.
+
   ### Registering Tests
-
-  Tests are added as part of your mix configuration. Configuration expects an a map with the following properties:
+  Tests should be provided as a map with the following properties:
   - `id` the id of the test.
-  - `test` either a three item tuple of `{ Module, :fun, [args]}` or an anonymous function.
-  - `timeout` (optional) the amount of time (in ms) the test has to complete. Defaults to 1000.
+  - `test` either a three item tuple of `{ Module, :fun, [args]}` or an
+  anonymous function.
+  - `timeout` (optional) the amount of time (in ms) the test has to complete.
+  Defaults to 1000.
 
-  Each test should return a two-item tuple of `{:ok, term}` or `{:error, reason}`. Items that
-  don't fulfill this spec are marked as a failure.
+  Each test should return a two-item tuple of `{:ok, term}` or `{:error, reason}`.
+  Items that don't fulfill this spec are marked as a failure.
 
   ```
+  tests: [
+    # Test "db" calls a Module.function(args), with a timeout of 5000 ms
+    %{ id: "db", test: {Module, :function, [args]}, timeout: 5000} ,
+
+    # Test "cluster" calls an anonymous function, with a timeout of 1500ms
+    %{ id: "cluster", test: fn -> :net_adm.names() end, timeout: 1500 },
+
+    # Test "other" calls another  module, and uses the default timeout of 1000
+    %{ id: "other", test: {Other.Module, :function, [args]} },
+  ]
+  ```
+
+  Inlined into your configuration:
+  ```
+  # application configuration
   config :example, SmokeTest,
     tests: [
-      # Test "db" calls a Module.function(args), with a timeout of 5000 ms
       %{ id: "db", test: {Module, :function, [args]}, timeout: 5000} ,
-
-      # Test "cluster" calls an anonymous function, with a timeout of 1500ms
       %{ id: "cluster", test: fn -> :net_adm.names() end, timeout: 1500 },
-
-      # Test "other" calls another  module, and uses the default timeout of 1000
       %{ id: "other", test: {Other.Module, :function, [args]} },
     ]
+
+  # plug configuration
+  forward "/ping", SmokeTest, [
+    otp_app: :example,
+    tests: [
+      %{ id: "db", test: {Module, :function, [args]}, timeout: 5000} ,
+      %{ id: "cluster", test: fn -> :net_adm.names() end, timeout: 1500 },
+      %{ id: "other", test: {Other.Module, :function, [args]} },
+    ]
+  ]
+
   ```
 
-  ### Additional Configuration
+  ### Additional Configuration options
 
   #### Response Status
   The status to return on success and failure is also configurable. Success
   defaults to 200, and failure defaults to 503
 
   ```
+  # application configuration
   config :example, Smoketest,
     success_status: 201,
     failure_status: 500
+
+  # plug configuration
+  forward "/ping", SmokeTest, [
+    otp_app: :example,
+    success_status: 201,
+    failure_status: 500
+  ]
   ```
 
 
@@ -87,8 +124,15 @@ defmodule SmokeTest do
   configuration:
 
   ```
+  # application config
   config :example, SmokeTest,
-    json_encoder: SmokeTest.Adapters.JSONEncoder.Poison # Again, used by default.
+    json_encoder: SmokeTest.Adapters.JSONEncoder.Poison
+
+  # plug config
+  forward "/ping", SmokeTest, [
+    otp_app: :example,
+    json_encoder: SmokeTest.Adapters.JSONEncoder.Poison
+  ]
   ```
 
   ## Example JSON Output
