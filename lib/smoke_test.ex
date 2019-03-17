@@ -146,11 +146,8 @@ defmodule SmokeTest do
   end
 
   def init(opts) do
-    config =
-      opts
-      |> get_or_throw(:otp_app, otp_app_error())
-      |> Application.get_env(__MODULE__, [])
-
+    otp_app = get_or_throw(opts, :otp_app, otp_app_error())
+    config = Application.get_env(otp_app, __MODULE__, [])
     merged = Keyword.merge(config, opts)
 
     encoder =
@@ -158,20 +155,23 @@ defmodule SmokeTest do
       |> Keyword.merge(merged)
       |> get_or_throw(:json_encoder, decoder_error())
 
+    {:ok, version} = :application.get_key(otp_app, :vsn)
+
     merged
-    |> Keyword.put(:project, Mix.Project.config())
+    |> Keyword.put(:version, List.to_string(version))
     |> Keyword.put(:json_encoder, encoder)
   end
 
   defp get_or_throw(opts, key, error) do
     case Keyword.get(opts, key) do
-      nil -> raise error
+      nil -> throw(error)
       otherwise -> otherwise
     end
   end
 
   def call(conn, options) do
-    {project, options} = Keyword.pop(options, :project, %{})
+    {app, options} = Keyword.pop(options, :otp_app)
+    {version, options} = Keyword.pop(options, :version)
     {encoder, options} = Keyword.pop(options, :json_encoder)
     {tests, options} = Keyword.pop(options, :tests, [])
     {success_status, options} = Keyword.pop(options, :success_status, 200)
@@ -203,8 +203,8 @@ defmodule SmokeTest do
     body =
       Map.merge(results, %{
         status: status_text,
-        app: project[:app],
-        version: project[:version]
+        app: app,
+        version: version
       })
 
     conn
@@ -242,13 +242,10 @@ defmodule SmokeTest do
   # Error messages
 
   defp decoder_error do
-    """
-    No JSON encoder specified in configuration, and default JSON encoder is
-    unavailable. Please include a JSON encoder adapter. See hexdocs for details.
-    """
+    "No JSON encoder specified in configuration, or plug options; Default JSON encoder is unavailable. Please include a JSON encoder adapter. See hexdocs for details."
   end
 
   defp otp_app_error do
-    "No OTP app specified in options. Please specify an application holding the SmokeTest configuration."
+    "No OTP app specified in application config or plug options. Please specify an application holding the SmokeTest configuration."
   end
 end
